@@ -179,7 +179,7 @@ function getChanges(dataA, dataB){
                                 if(updates.create.length !== 0)
                                     api.rows.add( updates.create );
 
-                                api.draw();
+                                api.draw(false);
 
                                 dtData = response;
                             }
