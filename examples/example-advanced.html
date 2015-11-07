@@ -1,0 +1,87 @@
+<html>
+<head>
+    <title>DataTables Plugin: Live Ajax - Advanced Example</title>
+
+    <link href="http://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+    <link href="http://cdn.datatables.net/buttons/1.0.1/css/buttons.dataTables.css" rel="stylesheet" type="text/css" />
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="http://nightly.datatables.net/js/jquery.dataTables.js"></script>
+    <script src="../dataTables.liveAjax.js"></script>
+</head>
+<body>
+<h1>DatTables Live Ajax Plugin - <i>Advanced Example</i></h1>
+<small><strong>Description:</strong> Shows full compatibility with all <a href="http://datatables.net/reference/option/ajax" target="_blank">ajax</a> options, changes update interval and adds a function to pause ajax requests randomly</small><br/><br/>
+<a href="index.html">Other Examples</a>
+<hr/>
+<i>Source Used</i>
+<pre>
+    $(document).ready(function() {
+        $('#example').DataTable({
+            ajax: {
+                url: 'dataSrc.php',
+                type: 'POST',
+                data: { dataSrc: 'something'},
+                dataSrc: 'something'
+            },
+            columns: [
+                {
+                    title: 'Name',
+                    name:  'name',
+                    data:  'name'
+                },
+                {
+                    data:  'extn',
+                    name:  'extn',
+                    title: 'Extension'
+                }
+            ],
+            rowId: 'emp_id',
+            liveAjax: {
+                // Update every 4.5 seconds
+                interval: 4500,
+                pause: function(){
+                    // Randomly return TRUE to pause
+                    return Math.random()<.5;
+                }
+            }
+        });
+    } );
+</pre>
+<hr/>
+<table id="example" class="display" cellspacing="0" width="100%">
+</table>
+</body>
+</html>
+<script>
+    $(document).ready(function() {
+        $('#example').DataTable({
+            ajax: {
+                url: 'dataSrc.php',
+                type: 'POST',
+                data: { dataSrc: 'something'},
+                dataSrc: 'something'
+            },
+            columns: [
+                {
+                    title: 'Name',
+                    name:  'name',
+                    data:  'name'
+                },
+                {
+                    data:  'extn',
+                    name:  'extn',
+                    title: 'Extension'
+                }
+            ],
+            rowId: 'emp_id',
+            liveAjax: {
+                // Update every 4.5 seconds
+                interval: 4500,
+                pause: function(){
+                    // Randomly return TRUE to pause
+                    return Math.random()<.5;
+                }
+            }
+        });
+    } );
+</script>
