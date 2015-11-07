@@ -110,6 +110,7 @@ function getChanges(dataA, dataB){
         delete(dataB[k]);
     });
 
+    // Now, dataB should consist of just the new assets
     $.each(dataB, function(k, v){
         updates.create.push(v);
     });
@@ -179,8 +180,10 @@ function getChanges(dataA, dataB){
                                 if(updates.create.length !== 0)
                                     api.rows.add( updates.create );
 
+                                // Redraw the table, dont change pages
                                 api.draw(false);
 
+                                // Update the existing data set to match what the table is seeing
                                 dtData = response;
                             }
                         },

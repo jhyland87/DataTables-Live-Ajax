@@ -8,11 +8,19 @@ ajax.data, ajax.dataSrc, ajax.url)
 
 *([Demo Here](http://www.justinhyland.com/p/dt/datatables-live-ajax/examples/))*
 
-**Directions**:
+### Directions ###
 
 1. Setup table to use [ajax](http://datatables.net/reference/option/ajax) data source
 1. Make sure your AJAX source is [structured with objects](http://datatables.net/examples/ajax/objects.html)
 1. Make sure to specify a [rowId](http://datatables.net/reference/option/rowId)
+
+## Parameters ###
+Parameter 			 | Type 	| Default | Description
+-------------------- | -------- | ------- | ------------
+`liveAjax`  		 | boolean	| true	  | Enable/Disable liveAjax plugin
+`liveAjax.interval`  | number	| 5000	  | Interval to check for updates (in milliseconds)
+`liveAjax.pause`	 | function | 		  | Function used to determine when/if updates should be paused
+
 
 ### Example Usage ###
 
@@ -20,18 +28,6 @@ Basic Initialization - Enable *liveAjax* (Checks for updates every 5 seconds by 
 ```javascript
 $('#example').DataTable({
     ajax: 'dataSrc.php',
-    columns: [
-        {
-            title: 'Name',
-            name:  'name',
-            data:  'name'
-        },
-        {
-            data:  'extn',
-            name:  'extn',
-            title: 'Extension'
-        }
-    ],
     rowId: 'emp_id',
     liveAjax: true
 });
@@ -46,18 +42,6 @@ $('#example').DataTable({
         data: { dataSrc: 'something'},
         dataSrc: 'something'
     },
-    columns: [
-        {
-            title: 'Name',
-            name:  'name',
-            data:  'name'
-        },
-        {
-            data:  'extn',
-            name:  'extn',
-            title: 'Extension'
-        }
-    ],
     rowId: 'emp_id',
     liveAjax: {
         // Update every 4.5 seconds
