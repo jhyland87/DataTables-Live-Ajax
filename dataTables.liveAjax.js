@@ -132,7 +132,7 @@ function getChanges(dataA, dataB){
         if (dtSettings.oInit.rowId === undefined )
             throw new Error('To use liveAjax, you need to specify the DataTables option "rowId"');
 
-        // Check for either hideEmptyCols or hideEmptyColumns
+        // LiveAjax options
         var options = dtSettings.oInit.liveAjax;
 
 

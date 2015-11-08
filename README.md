@@ -14,12 +14,12 @@ ajax.data, ajax.dataSrc, ajax.url)
 1. Make sure your AJAX source is [structured with objects](http://datatables.net/examples/ajax/objects.html)
 1. Make sure to specify a [rowId](http://datatables.net/reference/option/rowId)
 
-## Parameters ###
+### Parameters ###
 Parameter 			 | Type 	| Default | Description
 -------------------- | -------- | ------- | ------------
 `liveAjax`  		 | boolean	| true	  | Enable/Disable liveAjax plugin
 `liveAjax.interval`  | number	| 5000	  | Interval to check for updates (in milliseconds)
-`liveAjax.pause`	 | function | 		  | Function used to determine when/if updates should be paused
+`liveAjax.pause`	 | function | *N/A*   | Function used to determine when/if updates should be paused
 
 
 ### Example Usage ###
