@@ -1,6 +1,6 @@
 /**
  * @summary     liveAjax
- * @description Keep an AJAX sourced DT table up to date (without reloading the entire data source)
+ * @description Keep an AJAX sourced DT table up to date (optionally reload only necessary rows)
  * @version     1.0.0
  * @file        dataTables.liveAjax.js
  * @author      Justin Hyland (http://www.justinhyland.com)
@@ -10,12 +10,9 @@
  *
  * License      MIT - http://datatables.net/license/mit
  *
- * Monitor the AJAX data source every N seconds, comparing the current data structure and the data
- * structure just pulled. Instead of reloading the entire table, delete any deleted rows, add any
- * new rows, then delete/readd any updated rows.
- * This should be helpful for any AJAX data sources that are HUGE!
- * All of the DataTables AJAX settings are compatible with this plugin (ajax.type, ajax.data,
- * ajax.dataSrc, ajax.url)
+ Monitor the AJAX data source every N seconds, comparing the current data structure and the data structure just pulled. If the DataTables setting rowId is _not_ specified, then the entire table will be reloaded whenever any changes are detected. If rowId _is_ specified, then liveAjax will update only the necessary rows, this is more resourceful than the former option, especially on massively large data structures, where serverSide should be used, but isn't.
+ LiveAjax also has 2 optional parameters, one to specify the update interval (in milliseconds), and another to pause updates, which is useful for when there are certain actions being executed, which would be hindered if the table was updated.
+All of the DataTables AJAX settings are compatible with this plugin (ajax.type, ajax.data, ajax.dataSrc, ajax.url)
  *
  *
  * Parameters:
@@ -40,20 +37,31 @@
  *
  *
  * @example
- *    // Target all columns - Hide any columns that contain all null/empty values
+ *    // Basic setup - Update the necessary rows every 5 seconds (default)
  *    $('#example').DataTable({
+ *        ajax: 'json.php',
+ *        rowId: 'ssid',
  *        liveAjax: true
  *    });
  *
  * @example
- *    // Target the column indexes 0 & 2
+ *    // Update the necessary rows every 3.5 seconds, except when somethingIsHappening()
  *    $('#example').DataTable({
+ *        ajax: 'json.php',
+ *        rowId: 'ssid',
  *        liveAjax: {
  *              interval: 3500,
  *              pause: function(){
  *                  if(somethingIsHappening()) return true;
  *              }
  *        }
+ *    });
+ *
+ * @example
+ *    // Update the entire table when any changes are detected (Less optimal than when rowId is used)
+ *    $('#example').DataTable({
+ *        ajax: 'json.php',
+ *        liveAjax: true
  *    });
  */
 
@@ -129,9 +137,6 @@ function getChanges(dataA, dataB){
         if ( dtSettings.oInit.ajax === undefined )
             throw new Error('Can not initiate DataTables plugin liveAjax on a non-ajax table');
 
-        if (dtSettings.oInit.rowId === undefined )
-            throw new Error('To use liveAjax, you need to specify the DataTables option "rowId"');
-
         // LiveAjax options
         var options = dtSettings.oInit.liveAjax;
 
@@ -168,23 +173,38 @@ function getChanges(dataA, dataB){
                         url: ajaxUrl,
                         cache: false,
                         success: function ( response ) {
-                            var updates = getChanges( keyStructData(rowId, dtData[ dataSrc ]), keyStructData(rowId, response[ dataSrc ]) );
+                            // If no rowId is specified, then compare the entire contents,
+                            // if any differences are found, reload the entire table
+                            if(rowId === undefined){
+                                if(JSON.toString(dtData[ dataSrc ]) !== JSON.toString(response[ dataSrc ])) {
+                                    api.ajax.reload( null, false );
 
-                            if(updates !== null){
+                                    dtData = response;
+                                }
+                            }
+                            // If rowId IS specified, then take the more optimal route of
+                            // updating only the rows that need it
+                            else {
+                                var updates = getChanges( keyStructData( rowId, dtData[ dataSrc ] ), keyStructData( rowId, response[ dataSrc ] ) );
 
-                                // Deleted Rows
-                                if(updates.delete.length !== 0)
-                                    api.rows( $.map(updates.delete, function(v,i){ return '#'+v; }) ).remove();
+                                if ( updates !== null ) {
 
-                                // New rows
-                                if(updates.create.length !== 0)
-                                    api.rows.add( updates.create );
+                                    // Deleted Rows
+                                    if ( updates.delete.length !== 0 )
+                                        api.rows( $.map( updates.delete, function ( v, i ) {
+                                            return '#' + v;
+                                        } ) ).remove();
 
-                                // Redraw the table, dont change pages
-                                api.draw(false);
+                                    // New rows
+                                    if ( updates.create.length !== 0 )
+                                        api.rows.add( updates.create );
 
-                                // Update the existing data set to match what the table is seeing
-                                dtData = response;
+                                    // Redraw the table, dont change pages
+                                    api.draw( false );
+
+                                    // Update the existing data set to match what the table is seeing
+                                    dtData = response;
+                                }
                             }
                         },
                         error: function ( xhr, ajaxOptions, thrownError ) {
