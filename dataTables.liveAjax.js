@@ -253,7 +253,6 @@ var updateLoop,
                             // If no rowId is specified, then compare the entire contents,
                             // if any differences are found, reload the entire table
                             if(rowId === undefined){
-                                //console.log('No Row ID');
                                 if(JSON.stringify(dtData[ dataSrc ]) !== JSON.stringify(response[ dataSrc ])) {
                                     changesFound = true;
 
@@ -338,19 +337,19 @@ var updateLoop,
             }
 
             // Function to check if the table being destroyed is the correct table ID
-            var destroyCallback = function (e, ctx) {
+            var _destroyCallback = function (e, ctx) {
                 // Due to a bug of "bubbling" effects, make sure its the correct table being destroyed.
                 if ( $( api.table().node() ).attr('id') === ctx.nTable.id ){
                     // Kill the timeout loop
                     clearTimeout( updateLoop );
 
                     // Remove this function from the destroy.dt for this table
-                    api.off( 'destroy.dt', destroyCallback );
+                    api.off( 'destroy.dt', _destroyCallback );
                 }
             };
 
             // If the DT instance was terminated, end the loop
-            api.on('destroy.dt', destroyCallback );
+            api.on('destroy.dt', _destroyCallback );
         }
     });
 
@@ -361,9 +360,12 @@ var updateLoop,
      *
      * @description: Kill the update loop - permanently
      * @example: table.liveAjax.clear();
+     * @return  DT API Instance
      */
     $.fn.dataTable.Api.register( 'liveAjax.clear()', function (  ) {
-        clearTimeout(updateLoop);
+        return this.iterator( 'table', function ( settings ) {
+            clearTimeout( updateLoop );
+        } );
     } );
 
     /**
@@ -371,9 +373,12 @@ var updateLoop,
      *
      * @description: Pause the table, disabling checking for updates
      * @example: table.liveAjax.pause();
+     * @return  DT API Instance
      */
     $.fn.dataTable.Api.register( 'liveAjax.pause()', function (  ) {
-        apiPause = true;
+        return this.iterator( 'table', function ( settings ) {
+            apiPause = true;
+        } );
     } );
 
     /**
@@ -381,9 +386,12 @@ var updateLoop,
      *
      * @description: Unpause the table, checking for updates
      * @example: table.liveAjax.resume();
+     * @return  DT API Instance
      */
     $.fn.dataTable.Api.register( 'liveAjax.resume()', function (  ) {
-        apiPause = false;
+        return this.iterator( 'table', function ( settings ) {
+            apiPause = false;
+        } );
     } );
 
     /**
@@ -391,9 +399,12 @@ var updateLoop,
      *
      * @description: Toggle the pause status of the table
      * @example: table.liveAjax.toggle();
+     * @return  DT API Instance
      */
     $.fn.dataTable.Api.register( 'liveAjax.toggle()', function (  ) {
-        apiPause = !apiPause;
+        return this.iterator( 'table', function ( settings ) {
+            apiPause = !apiPause;
+        } );
     } );
 
     /**
@@ -404,9 +415,12 @@ var updateLoop,
      * @param   (boolean}   resetPaging     Reset paging via draw()
      * @param   {boolean}   force           Force update, even if updates are paused
      * @example: Reload table forcefully: table.liveAjax.reload(null, false, true );
+     * @return  DT API Instance
      */
     $.fn.dataTable.Api.register( 'liveAjax.reload()', function ( callback, resetPaging, force ) {
-        initReload( callback, resetPaging, force );
+        return this.iterator( 'table', function ( settings ) {
+            initReload( callback, resetPaging, force );
+        } );
     } );
 
     /**
@@ -415,7 +429,8 @@ var updateLoop,
      * @description:    Update the interval
      * @param {int} int New Interval
      * @example: Set to value of #int: table.liveAjax.interval( $('#int' ).val() );
-     * @example: Reset to init value:  table.liveAjax.interval( null);
+     * @example: Reset to init value:  table.liveAjax.interval( null );
+     * @return  DT API Instance
      */
     $.fn.dataTable.Api.register( 'liveAjax.interval()', function ( int ) {
         return this.iterator( 'table', function ( settings ) {
