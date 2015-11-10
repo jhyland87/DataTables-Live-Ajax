@@ -13,11 +13,29 @@ All of the DataTables AJAX settings are compatible with this plugin ([ajax.type]
 1. _(Recommended, not required)_ Specify a [rowId](http://datatables.net/reference/option/rowId) attribute
 
 ### Parameters ###
-Parameter 			 | Type 	| Default | Description
--------------------- | -------- | ------- | ------------
-`liveAjax`  		 | boolean	| true	  | Enable/Disable liveAjax plugin
-`liveAjax.interval`  | number	| 5000	  | Interval to check for updates (in milliseconds)
-`liveAjax.pause`	 | function | *N/A*   | Function used to determine when/if updates should be paused
+Parameter 			  | Type 	 | Default | Description
+--------------------- | -------- | ------- | ------------
+`liveAjax`  		  | boolean	 | true	   | Enable/Disable liveAjax plugin
+`liveAjax.interval`   | number	 | 5000	   | Interval to check for updates (in milliseconds)
+`liveAjax.pause`	  | function | *N/A*   | Function used to determine when/if updates should be paused
+`liveAjax.xhrDt`	  | boolean	 | false   | Fire off the [xhr.dt](http://datatables.net/reference/event/xhr) event (on successful updates)
+`liveAjax.callback`	  | function | *N/A*   | Callback to fire on successful updates
+`liveAjax.resetPaging | boolean	 | false   | Enable/Disable page resets on updates
+
+### Events ###
+Event			| Description		| Parameters
+--------------- | ----------------- | -------------
+`xhr.liveAjax`  | Event fired when table is successfully updated
+
+### API Methods ###
+Method					| Description				| Parameters
+----------------------- | ------------------------- | -------------
+`iveAjax.clear()`		| Clear update loop			| *None*
+`liveAjax.pause()`		| Pause Updates				| *None*
+`liveAjax.resume()`		| Resume Updates			| *None*
+`liveAjax.toggle()`		| Toggle Pause Status		| *None*
+`liveAjax.reload()`		| Reload table				| *function* callback, *boolean* resetPaging, *boolean* force
+`liveAjax.interval()`	| Change update interval	| *integer* interval *(use **null** to reset to default or config value)*
 
 
 ### Example Usage ###
@@ -52,10 +70,73 @@ $('#example').DataTable({
 });
 ```
 
+Dynamic update interval (new interval will take affect after next reload, can use API to force: `table.liveAjax.reload()`)
+```javascript
+$('#example').DataTable({
+    ajax: 'dataSrc.php',
+    rowId: 'emp_id',
+    liveAjax: {
+        interval: function(){
+        	return $('new-interval').val();
+        }
+    }
+});
+```
+
+Utilize the liveAjax callback, **and** enable DataTables [xhr.dt](http://datatables.net/reference/event/xhr) event
+```javascript
+$('#example').DataTable({
+    ajax: 'dataSrc.php',
+    rowId: 'emp_id',
+    liveAjax: {
+        callback: function( json ){
+        	alert('Records Found: #'+json.data.length);
+        },
+        xhrDt: true
+    }
+});
+```
+
 Update the entire table when any changes are detected (Less optimal than when [rowid](http://datatables.net/reference/option/rowId) is used)
 ```javascript
 $('#example').DataTable({
     ajax: 'json.php',
     liveAjax: true
 });
+```
+
+### Example API Usage ###
+Stop updates entirely (Can not be restarted)
+```javascript
+table.liveAjax.clear();
+```
+
+Pause updates (Updates can only be ran if forced)
+```javascript
+table.liveAjax.pause();
+```
+
+Resume updates
+```javascript
+table.liveAjax.resume();
+```
+
+Initialize immediate reload the table (Does not wait for interval)
+```javascript
+table.liveAjax.reload();
+```
+
+Force reload of table (Executes regardless if paused or not)
+```javascript
+table.liveAjax.reload(null, false, true );
+```
+
+Change interval update to 3 seconds
+```javascript
+table.liveAjax.interval( 3000 );
+```
+
+Clear the API interval status, resetting it to default (5000) or value set by `liveAjax.interval` setting
+```javascript
+table.liveAjax.interval( null );
 ```
