@@ -1,0 +1,344 @@
+<html>
+<head>
+    <title>DataTables Plugin: Live Ajax - Events and API Methods</title>
+
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="examples.js"></script>
+    <link rel="stylesheet" href="examples.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+    <link href="http://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+    <link href="http://cdn.datatables.net/buttons/1.0.1/css/buttons.dataTables.css" rel="stylesheet" type="text/css" />
+    <script src="http://nightly.datatables.net/js/jquery.dataTables.js"></script>
+    <script src="../dataTables.liveAjax.js"></script>
+</head>
+<body>
+<h1>DatTables Live Ajax Plugin - <i>Events and API Methods</i></h1>
+<div class="content-box">
+    <strong>Description:</strong> Example of how to execute some API Methods, and how to utilize the liveAjax events
+</div>
+<a href="index.html">Other Examples</a>
+<hr/>
+<h2>Example Source Code</h2>
+<div id="example-source" class="content-box">
+    Here's the exact jQuery code for this plugin example</div>
+<pre id="example-js-preview">
+<code class="javascript">
+</code>
+</pre>
+<hr/>
+<h2>Example DataTable</h2>
+<div id="api-buttons" class="content-box">
+    <strong>API Methods:</strong> <i>liveAjax.</i>[
+    <a id="start" href="#">initiate()</a>
+    | <a id="clear" href="#">clearTimeout(true)</a>
+    | <a id="update" href="#">update()</a>
+    | <a id="abort" href="#">abortXhr()</a>
+    | <a id="pause" href="#">pause()</a>
+    | <a id="resume" href="#">resume()</a>
+    | <a id="toggle" href="#">togglePause()</a>
+    | <a id="pause-status" href="#">isPaused()</a>
+    | <a id="set-interval" href="#">setInterval</a>(<input id="new-interval" value="2000"/>) <i><small>Type to change interval</small></i> ]
+</div>
+<div class="content-box">
+    The table below has an AJAX source that generates a random amount of <i>employees</i>, as well as random data for each employee. This leads to rows randomly being deleted, updated and created.
+</div>
+<table id="example" class="display" cellspacing="0" width="100%">
+</table>
+<hr/>
+<h2>Event Log</h2>
+<div id="events" class="content-box">
+    To give you an idea of the events and when they fire, weve logged every event fired from liveAjax into the below table.
+</div>
+<span id="event-log" style="width:100%; background-color: #f4f4f4; height: 300px; overflow: scroll;">
+    <table id="event-log-table" class="display">
+        <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Event</th>
+            <th>Data</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</span>
+</body>
+</html>
+<script id="example-js">
+    $(document).ready(function() {
+        "use strict";
+
+        var table = $( 'table#example' )
+                .DataTable({
+                    ajax: {
+                        url: 'dataSrc.php',
+                        type: 'GET',
+                        data: {
+                            // The PHP script accepts $_REQUEST['dataSrc'] to set as the root value,
+                            // this is correlated with the ajax.dataSrc value
+                            dataSrc: 'SomethingCool'
+                        },
+                        dataSrc: 'SomethingCool'
+                    },
+                    columns: [
+                        {
+                            title: 'Employee ID',
+                            data:  'emp_id'
+                        }, {
+                            title: 'Name',
+                            data:  'name'
+                        }, {
+                            data:  'extn',
+                            title: 'Extension'
+                        }, {
+                            data:  'age',
+                            title: 'Age'
+                        }, {
+                            data:  'position',
+                            title: 'Position'
+                        }
+                    ],
+                    // Setting the rowId value will ensure that _only_ the rows that need updating get
+                    // updated, if this isn't set, and there's no 'DT_RowId', then the entire table will
+                    // be reset, this is virtually the same as the ajax.reload() API call
+                    rowId: 'emp_id',
+                    liveAjax: {
+                        // 2 second interval
+                        interval: 2000,
+                        // Do _not_ fire the DT callbacks for every XHR request made by liveAjax
+                        dtCallbacks: false,
+                        // Abort the XHR polling if one of the below errors were encountered
+                        abortOn: ['error', 'timeout', 'parsererror'],
+                        // Disable pagination resetting on updates ("true" will send the viewer
+                        // to the first page every update)
+                        resetPaging: false
+                    }
+                })
+
+                /**
+                 * Event:       xhrErr.liveAjax
+                 * Description: Triggered for any and all errors encountered during an XHR request (Meaning it covers
+                 *              all of the xhrErr*.liveAjax events below)
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object; {string} Error thrown
+                 */
+                .on('xhrErr.liveAjax', function ( e, settings, xhr, thrown ) {
+                    addEventLog('xhrErr','General XHR Error: ' + thrown);
+                } )
+
+                /**
+                 * Event:       xhrErrTimeout.liveAjax
+                 * Description: Triggered when a 'timeout' error was thrown from an XHR request
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object; {string} Error thrown
+                 */
+                .on('xhrErrTimeout.liveAjax', function ( e, settings, xhr, thrown ) {
+                    addEventLog('xhrErrTimeout','XHR Error: Timeout');
+                } )
+
+                /**
+                 * Event:       xhrErrError.liveAjax
+                 * Description: Triggered when a 'error' error was thrown from an XHR request
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object; {string} Error thrown
+                 */
+                .on('xhrErrError.liveAjax', function ( e, settings, xhr, thrown ) {
+                    addEventLog('XHR Error: Error');
+                } )
+
+                /**
+                 * Event:       xhrErrAbort.liveAjax
+                 * Description: Triggered when an 'abort' error was thrown from an XHR request
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object; {string} Error thrown
+                 */
+                .on('xhrErrAbort.liveAjax', function ( e, settings, xhr, thrown ) {
+                    addEventLog('xhrErrAbort','XHR Error: Abort');
+                } )
+
+                /**
+                 * Event:       xhrErrParseerror.liveAjax
+                 * Description: Triggered when a 'parsererror' error was thrown from an XHR request
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object; {string} Error thrown
+                 */
+                .on('xhrErrParseerror.liveAjax', function ( e, settings, xhr, thrown ) {
+                    addEventLog('xhrErrParseerror','XHR Error: Parse Error');
+                } )
+
+                /**
+                 * Event:       xhrErrUnknown.liveAjax
+                 * Description: Triggered when an unknown error was thrown from an XHR request, this shouldn't ever
+                 *              happen actually, seeing as how all the textStatus values from
+                 *              http://api.jquery.com/jquery.ajax/ were accounted for. But I just liked having a default
+                 *              failsafe, in the case maybe a new error type gets implemented and this plugin doesn't get
+                 *              updated
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object; {string} Error thrown
+                 */
+                .on('xhrErrUnknown.liveAjax', function ( e, settings, xhr, thrown ) {
+                    addEventLog('xhrErrParseerror','(Unknown) XHR Error: ' + thrown);
+                } )
+
+                /**
+                 * Event:       xhrSkipped.liveAjax
+                 * Description: Triggered when an XHR iteration is skipped, either due to polling being paused, or an XHR request is already processing
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object; {string} Reason for skip (either 'paused' or 'processing')
+                 */
+                .on('xhrSkipped.liveAjax', function ( e, settings, reason ) {
+                    addEventLog('xhrSkipped','XHR Skipped because liveAjax is ' + reason);
+                } )
+
+                /**
+                 * Event:       setInterval.liveAjax
+                 * Description: Triggered when the setTimeout interval has been changed
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object
+                 */
+                .on('setInterval.liveAjax', function ( e, settings, interval ) {
+                    addEventLog('setInterval','XHR polling interval set to ' + interval);
+                } )
+
+                /**
+                 * Event:       init.liveAjax
+                 * Description: Triggered when the liveAjax plugin has been initialized
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object
+                 */
+                .on('init.liveAjax', function ( e, settings, xhr ) {
+                    addEventLog('init','liveAjax initiated');
+                } )
+
+                /**
+                 * Event:       clearTimeout.liveAjax
+                 * Description: Triggered when the timeout has been cleared, killing the XHR polling
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object
+                 */
+                .on('clearTimeout.liveAjax', function ( e, settings, xhr ) {
+                    addEventLog('clearTimeout','liveAjax timeout cleared');
+                } )
+
+                /**
+                 * Event:       abortXhr.liveAjax
+                 * Description: Triggered when the current XHR request was aborted, either by an API method or an internal reason (Not the same as 'xhrErrAbort.liveAjax')
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object
+                 */
+                .on('abortXhr.liveAjax', function ( e, settings, xhr ) {
+                    addEventLog('abortXhr','liveAjax XHR request was aborted');
+                } )
+
+                /**
+                 * Event:       setPause.liveAjax
+                 * Description: Triggered when the liveAjax XHR polling was paused or un-paused
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} XHR Object
+                 */
+                .on('setPause.liveAjax', function ( e, settings, paused ) {
+                    addEventLog('setPause','liveAjax XHR polling was ' + (paused === true ? 'paused' : 'un-paused'));
+                } )
+
+                /**
+                 * Event:       onUpdate.liveAjax
+                 * Description: Triggered when liveAjax is finished comparing the new/existing JSON, and has implemented any changes to the table, according to the new JSON data
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} Updates that were implemented; {object} New JSON data for tabke; {object} XHR Object
+                 */
+                .on('onUpdate.liveAjax', function ( e, settings, updates, json, xhr ) {
+                    addEventLog('onUpdate','JSON Processed - Table updated with new data; '
+                    + (updates.delete.length || 0) + ' deletes, '
+                    + (updates.create.length || 0) + ' additions, '
+                    + Object.keys(updates.update).length + ' updates');
+                } )
+
+                /**
+                 * Event:       noUpdate.liveAjax
+                 * Description: Triggered when liveAjax is finished comparing the new/existing JSON, and no updates were implemented
+                 * Parameters:  {object} JQ Event; {object} DataTable Settings; {object} New JSON data for tabke; {object} XHR Object
+                 */
+                .on('noUpdate.liveAjax', function ( e, settings, json, xhr ) {
+                    addEventLog('noUpdate','JSON Processed - Table not updated, no new data');
+                } );
+
+        /**
+         * API Method:  liveAjax.setInterval()
+         * Description: Update the XHR Polling interval, takes effect after existing timeout is completed
+         * Parameters:  {integer} Timeout integer; {boolean} Terminate existing timeout, if any exist
+         */
+        $( '#set-interval' ).click(function(e){
+            e.preventDefault();
+            table.liveAjax.setInterval( (parseInt( $( '#new-interval' ).val() ) || 4000), true );
+        });
+
+        /**
+         * API Method:  liveAjax.abortXhr()
+         * Description: Abort the current XHR request (If any is processing)
+         * Parameters:  None
+         */
+        $( '#abort' ).click(function(e){
+            e.preventDefault();
+            table.liveAjax.abortXhr();
+        });
+
+        /**
+         * API Method:  liveAjax.togglePause()
+         * Description: Pause/Unpause the XHR Polling status
+         * Parameters:  None
+         */
+        $( '#toggle' ).click(function(e){
+            e.preventDefault();
+            table.liveAjax.togglePause();
+        });
+
+        /**
+         * API Method:  liveAjax.pause()
+         * Description: Pause the XHR Polling (If not paused)
+         * Parameters:  None
+         */
+        $( '#pause' ).click(function(e){
+            e.preventDefault();
+            table.liveAjax.pause();
+        });
+
+        /**
+         * API Method:  liveAjax.resume()
+         * Description: Resume the XHR Polling (If paused)
+         * Parameters:  None
+         */
+        $( '#resume' ).click(function(e){
+            e.preventDefault();
+            table.liveAjax.resume();
+        });
+
+        /**
+         * API Method:  liveAjax.initiate()
+         * Description: Start the XHR request loop (If its not already initiated)
+         * Parameters:  None
+         */
+        $( '#start' ).click(function(e){
+            e.preventDefault();
+            table.liveAjax.initiate();
+        });
+
+        /**
+         * API Method:  liveAjax.update()
+         * Description: Execute an XHR request for the new JSON, and update the table with any changes found
+         * Parameters:  None
+         */
+        $( '#update' ).click(function(e){
+            e.preventDefault();
+            table.liveAjax.reload();
+        });
+
+        /**
+         * API Method:  liveAjax.clearTimeout()
+         * Description: Destroy the liveAjax XHR Polling
+         * Parameters:  {boolean}   Abort current XHR Event
+         */
+        $( '#clear' ).click(function(e){
+            e.preventDefault();
+            table.liveAjax.clearTimeout( true );
+        });
+
+        /**
+         * API Method:  liveAjax.isPaused()
+         * Description: Retrieve the paused status of the table (Boolean)
+         * Parameters:  None
+         */
+        $( '#pause-status' ).click(function(e){
+            e.preventDefault();
+            addEventLog('liveAjax is '+ (table.liveAjax.isPaused() ? 'paused' : 'not paused'));
+        });
+    } );
+</script>
