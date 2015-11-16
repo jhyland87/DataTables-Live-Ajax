@@ -1010,7 +1010,7 @@
             return dtSettings.jqXHR === undefined
                 ? undefined
                 : dtSettings.jqXHR.readyState;
-        }, false );
+        }, false )[0];
     } );
 
     /**
