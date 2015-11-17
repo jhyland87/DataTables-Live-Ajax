@@ -28,7 +28,7 @@ label {
 }
 
 #example-js-preview {
-    height: 250px;
+    max-height: 250px;
     overflow: scroll;
 }
 
