@@ -4,7 +4,9 @@ Monitor the AJAX data source every 5 seconds (default), comparing the current da
  LiveAjax also has 2 optional parameters, one to specify the update interval (in milliseconds), and another to pause updates, which is useful for when there are certain actions being executed, which would be hindered if the table was updated.
 All of the DataTables AJAX settings are compatible with this plugin ([ajax.type](http://datatables.net/reference/option/ajax), [ajax.data](http://datatables.net/reference/option/ajax.data), [ajax.dataSrc](http://datatables.net/reference/option/ajax.dataSrc), [ajax.url](http://datatables.net/reference/option/ajax))
 
-*([Demo Here](http://www.justinhyland.com/p/dt/datatables-live-ajax/examples/))*
+#### Links ####
+* *[Live Demo](http://www.linuxdigest.org/misc/script_examples/DataTables-Live-Ajax/examples/)*
+* *[Blog Post](http://www.linuxdigest.org/blog/2015/11/16/datatables-live-ajax-plugin-keep-your-ajax-sourced-tables-up-to-date/)*
 
 ### Directions ###
 
