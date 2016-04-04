@@ -5,8 +5,8 @@ Monitor the AJAX data source every 5 seconds (default), comparing the current da
 All of the DataTables AJAX settings are compatible with this plugin ([ajax.type](http://datatables.net/reference/option/ajax), [ajax.data](http://datatables.net/reference/option/ajax.data), [ajax.dataSrc](http://datatables.net/reference/option/ajax.dataSrc), [ajax.url](http://datatables.net/reference/option/ajax))
 
 #### Links ####
-* *[Live Demo](http://www.linuxdigest.org/misc/script_examples/DataTables-Live-Ajax/examples/)*
-* *[Blog Post](http://www.linuxdigest.org/blog/2015/11/16/datatables-live-ajax-plugin-keep-your-ajax-sourced-tables-up-to-date/)*
+* *[Live Demo](http://demo.jsdigest.com/DataTables-Live-Ajax/examples/)*
+* *[Blog Post](http://www.jsdigest.com/datatables-live-ajax-plugin-keep-ajax-sourced-tables-date/)*
 
 ### Directions ###
 
