@@ -188,7 +188,7 @@
  *                              console.log('I always get executed...');
  *                          });
  */
-
+"use strict";
 ( function( window, document, $, undefined ) {
     /**
      * XHR States for the $.ajax().readyState values, just making them easier to use.
@@ -223,6 +223,9 @@
      */
     function _fnKeyStructData( key, data ){
         var result = {};
+
+        if( typeof data === 'undefined' )
+            return {}
 
         // Ensure values exist (Not important enough to warn
         if( data.length === 0 ) return {};
@@ -818,7 +821,7 @@
             },
             // Settings pulled from the DataTable core settings object
             rowId: dtSettings.rowId,
-            dataSrc: dtSettings.ajax.dataSrc || 'data',
+            dataSrc: typeof dtSettings.ajax.dataSrc === 'undefined' || typeof dtSettings.ajax.dataSrc === 'function' ? 'data' : dtSettings.ajax.dataSrc,
             previousJson: dtSettings.json,
             // Settings used internally by Live Ajax, or for the API Calls
             paused: false,

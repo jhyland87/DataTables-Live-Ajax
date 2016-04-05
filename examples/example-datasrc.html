@@ -1,0 +1,71 @@
+<html>
+<head>
+    <title>DataTables Plugin: Live Ajax - Basic Example</title>
+
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="examples.js"></script>
+    <link rel="stylesheet" href="examples.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+    <link href="http://nightly.datatables.net/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+    <link href="http://cdn.datatables.net/buttons/1.0.1/css/buttons.dataTables.css" rel="stylesheet" type="text/css" />
+    <script src="http://nightly.datatables.net/js/jquery.dataTables.js"></script>
+    <script src="../dataTables.liveAjax.js"></script>
+</head>
+<body>
+<h1>DataTables Live Ajax Plugin - <i>Basic Example</i></h1>
+<div class="content-box">
+    <strong>Description:</strong> Check for updates from the data source every 5 seconds (default)
+</div>
+<a href="index.html">Other Examples</a>
+<hr/>
+<h2>Example Source Code</h2>
+<div id="example-source" class="content-box">
+    Here's the exact jQuery code for this plugin example
+</div>
+<pre id="example-js-preview">
+<code class="javascript">
+</code>
+</pre>
+<hr/>
+<h2>Example DataTable</h2>
+<div class="content-box">
+    The table below has an AJAX source that generates a random amount of <i>employees</i>, as well as random data for each employee. This leads to rows randomly being deleted, updated and created.
+</div>
+<table id="example" class="display" cellspacing="0" width="100%">
+</table>
+</body>
+</html>
+<script id="example-js">
+    $(document).ready(function() {
+        $('#example').DataTable({
+            ajax: {
+                url: 'dataSrc.php',
+                dataSrc: function( json ){
+                    console.log('# JSON:',json)
+                    return json.data
+                }
+            },
+            columns: [
+                {
+                    title: 'Employee ID',
+                    data:  'emp_id'
+                }, {
+                    title: 'Name',
+                    data:  'name'
+                }, {
+                    data:  'extn',
+                    title: 'Extension'
+                }, {
+                    data:  'age',
+                    title: 'Age'
+                }, {
+                    data:  'position',
+                    title: 'Position'
+                }
+            ],
+            rowId: 'emp_id',
+            liveAjax: true
+        });
+    } );
+</script>
