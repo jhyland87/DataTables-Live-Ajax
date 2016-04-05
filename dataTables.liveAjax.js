@@ -1,7 +1,7 @@
 /**
  * @summary     liveAjax
  * @description Keep an AJAX sourced DT table up to date (optionally reload only necessary rows)
- * @version     1.1.0
+ * @version     1.1.1
  * @file        dataTables.liveAjax.js
  * @author      Justin Hyland (http://www.justinhyland.com)
  * @contact     j@linux.com
@@ -13,6 +13,16 @@
  * Monitor the AJAX data source every N seconds, comparing the current data structure and the data structure just pulled. If the DataTables setting rowId is _not_ specified and there is no DT_RowId key, then the entire table will be reloaded whenever any changes are detected. If rowId _is_ specified or a DT_RowId key exists, then liveAjax will update only the necessary rows, this is more resourceful than the former option, especially on massively large data structures, where serverSide should be used, but isn't.
  * All of the DataTables AJAX settings are compatible with this plugin (ajax.type, ajax.data, ajax.dataSrc, ajax.url)
  * Some of the functions used below are taken directly from the jquery.dataTables.js file, to ensure compatability.
+ *
+ * -------------
+ *
+ * Changelog:
+ *
+ * -------------
+ *
+ * v1.1.1   -   (Git issue: #1) Fixed an issue with the ajax.dataSrc value being treated as a string when it's in fact
+ *              defined as a function; Plugin now verifies that it's defined and is a string before using it as a JSON
+ *              element
  *
  * -------------
  *
@@ -596,7 +606,7 @@
     function _initUpdates( dtSettings ){
         // Prevent any duplicating of the loop
         if ( ! _isXhrClear( dtSettings ) ){
-            console.warn('liveAjax already initiated for table #' + dtSettings.nTable.id);
+            console.warn('liveAjax already initiated for table #%s', dtSettings.nTable.id);
             return;
         }
 
@@ -821,7 +831,10 @@
             },
             // Settings pulled from the DataTable core settings object
             rowId: dtSettings.rowId,
-            dataSrc: typeof dtSettings.ajax.dataSrc === 'undefined' || typeof dtSettings.ajax.dataSrc === 'function' ? 'data' : dtSettings.ajax.dataSrc,
+            // If the dataSrc is either unspecified, or not a string, then default to 'data' (which is the DataTables default dataSrc value)
+            dataSrc: typeof dtSettings.ajax.dataSrc === 'undefined' || typeof dtSettings.ajax.dataSrc !== 'string'
+                ? 'data'
+                : dtSettings.ajax.dataSrc,
             previousJson: dtSettings.json,
             // Settings used internally by Live Ajax, or for the API Calls
             paused: false,

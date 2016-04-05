@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>DataTables Plugin: Live Ajax - Basic Example</title>
+    <title>DataTables Plugin: Live Ajax - DataSrc Function Example</title>
 
     <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="examples.js"></script>
@@ -13,9 +13,9 @@
     <script src="../dataTables.liveAjax.js"></script>
 </head>
 <body>
-<h1>DataTables Live Ajax Plugin - <i>Basic Example</i></h1>
+<h1>DataTables Live Ajax Plugin - <i>DataSrc Function Example</i></h1>
 <div class="content-box">
-    <strong>Description:</strong> Check for updates from the data source every 5 seconds (default)
+    <strong>Description:</strong> An example of using <i>LiveAjax</i> and using a custom function as the DataTables <i><a href="http://datatables.net/reference/option/ajax.dataSrc" target="_blank">ajax.dataSrc</a></i>
 </div>
 <a href="index.html">Other Examples</a>
 <hr/>
@@ -42,7 +42,6 @@
             ajax: {
                 url: 'dataSrc.php',
                 dataSrc: function( json ){
-                    console.log('# JSON:',json)
                     return json.data
                 }
             },
