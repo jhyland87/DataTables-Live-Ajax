@@ -1,3 +1,8 @@
+## :exclamation: Note: This plugin is not actively maintained :exclamation: 
+###### This plugin/library was created by me out of necessity, and released to help others that may need it. I don't have time to actively maintain the code to keep up with DataTables updates or bugs in my code. If you run into an issue, feel free to attribute your own changes. :thumbsup:
+---
+
+
 # DataTables Plugin - Live Ajax #
 
 Monitor the AJAX data source every 5 seconds (default), comparing the current data structure and the data structure just pulled. If the DataTables setting [rowid](http://datatables.net/reference/option/rowId) is _not_ specified, then the entire table will be reloaded (via [ajax.reload()](http://datatables.net/reference/api/ajax.reload())) whenever any changes are detected. If [rowid](http://datatables.net/reference/option/rowId) _is_ specified, then liveAjax will update only the necessary rows, this is more resourceful than the former option, especially on massively large data structures, where serverSide should be used, but isn't.
